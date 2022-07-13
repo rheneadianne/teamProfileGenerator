@@ -79,14 +79,14 @@ const addEmployee = async (inputs = []) => {
         },
         {
             type: 'input',
-            name: 'employeeGit',
+            name: 'employeeSpecial',
             message: "What is the Employee's GitHub?",
             when: input => input.employeeRole === "Engineer",
             validate: validation
         },
         {
             type: 'input',
-            name: 'employeeSchool',
+            name: 'employeeSpecial',
             message: "What school is the employee currently attending?",
             when: input => input.employeeRole === "Intern",
             validate: validation
@@ -100,15 +100,24 @@ const addEmployee = async (inputs = []) => {
     ];
     
     const { addMore, ...answers} = await inquirer.prompt(questions)
-    team.push(...inputs, answers)
+    const {employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial} = answers
+    
+    if (employeeRole === 'Engineer') {
+        const engineer = new Engineer (employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial)
+        team.push(engineer)
+    } else {
+        const intern = new Intern (employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial)
+        team.push(intern)
+    }
+    
     return addMore ? addEmployee(team): team
     
 }
 
-const plsWork = async () => {
+const createHTML = async () => {
     const inputs = await addEmployee();
     console.log(inputs)
 }
 
 addManager()
-    .then(plsWork)
+    .then(createHTML)
