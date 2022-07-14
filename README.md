@@ -26,6 +26,9 @@ Project is free to pull and fork! No need to contact for requests.
 
 ## Tests
 In the main directory run 'npm run test' All tests should pass to ensure that the application is functioning as espected.
+
+## Screenshot and Demo
+![Project screenshot](./assets/img/screenshot.png)
     
 ## GitHub and Contact
 GitHub: [github.com/rheneadianne](https://github.com/rheneadianne)
