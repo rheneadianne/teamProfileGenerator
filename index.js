@@ -1,10 +1,12 @@
 // all of the required modules
-const inquirer = require('inquirer')
 const fs = require('fs')
 const path = require('path')
+const inquirer = require('inquirer')
 const Engineer = require('./lib/engineer.js')
 const Intern = require('./lib/intern.js')
 const Manager = require('./lib/manager.js')
+const generateHTML = require('./src/generateHTML.js')
+
 
 let validation = response => { // validation checker to prevent blank responses
     if (!response) {
@@ -46,12 +48,13 @@ const addManager = () => {
         .then(employeeData => {
             const { managerName, managerID, managerEmail, managerNum } = employeeData
             const manager = new Manager(managerName, managerID, managerEmail, managerNum)
+            console.log(manager.employeeRole())
             team.push(manager)
         }
         )
 }
 
-const addEmployee = async (inputs = []) => {
+const addEmployee = async () => {
     const questions = [
         {
             type: 'list',
@@ -79,14 +82,14 @@ const addEmployee = async (inputs = []) => {
         },
         {
             type: 'input',
-            name: 'employeeSpecial',
+            name: 'employeeGit',
             message: "What is the Employee's GitHub?",
             when: input => input.employeeRole === "Engineer",
             validate: validation
         },
         {
             type: 'input',
-            name: 'employeeSpecial',
+            name: 'employeeSchool',
             message: "What school is the employee currently attending?",
             when: input => input.employeeRole === "Intern",
             validate: validation
@@ -100,24 +103,31 @@ const addEmployee = async (inputs = []) => {
     ];
     
     const { addMore, ...answers} = await inquirer.prompt(questions)
-    const {employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial} = answers
     
-    if (employeeRole === 'Engineer') {
-        const engineer = new Engineer (employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial)
+    if (answers.employeeRole === 'Engineer') {
+        const {employeeName, employeeID, employeeEmail, employeeGit} = answers
+        const engineer = new Engineer (employeeName, employeeID, employeeEmail, employeeGit)
         team.push(engineer)
     } else {
-        const intern = new Intern (employeeRole, employeeName, employeeID, employeeEmail, employeeSpecial)
+        const {employeeName, employeeID, employeeEmail, employeeSchool} = answers
+        const intern = new Intern (employeeName, employeeID, employeeEmail, employeeSchool)
         team.push(intern)
     }
     
     return addMore ? addEmployee(team): team
-    
 }
 
-const createHTML = async () => {
+let dataHTML = []
+
+const htmlData = async () => {
     const inputs = await addEmployee();
-    console.log(inputs)
+    return dataHTML = inputs
 }
+
 
 addManager()
-    .then(createHTML)
+    .then(htmlData)
+    .then(data => { //creates a new file in dist folder called index.js
+        data = dataHTML
+        return fs.writeFileSync(path.join(process.cwd(), "/dist/index.html"), generateHTML(data));
+    })
