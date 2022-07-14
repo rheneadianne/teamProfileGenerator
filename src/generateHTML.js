@@ -36,7 +36,7 @@ const createInternCard = employee => {
             <div class="list-group-item"><b>Name:</b> ${employee.name}</div>
             <div class="list-group-item"><b>Employee ID:</b> ${employee.id}</div>
             <div class="list-group-item "><b>Email:</b> <a href="mailto:${employee.email}">${employee.email}</a></div>
-            <div class="list-group-item"><b>School:</b> ${employee.School}</div>
+            <div class="list-group-item"><b>School:</b> ${employee.school}</div>
         </div>
     </div>
 </article>
