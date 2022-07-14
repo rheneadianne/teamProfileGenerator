@@ -16,6 +16,29 @@ let validation = response => { // validation checker to prevent blank responses
         return true
     }
 }
+
+let emailValidation = response => {
+    if(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(response) === false) {
+        console.log(" <---- is an invalid email! Please to enter the email in this format: example@domain.com")
+        return false
+    } else {
+        return true
+    }
+}
+
+let numberValidation = response => {
+    if(/\d/.test(response) === false){
+        console.log(" <---- does not contain any digits. Please enter a 10 digit number followed by the extension if necessary.") 
+        return false
+    } else if (response.length < 10) {
+        console.log(" <---- was too short! Please enter a 10 number followed by the extension if necessary. ")
+    } else if (/\d/.test(response) === false && response.length < 10) {
+        console.log(" <---- does not contain any digits and is too short. Please enter a 10 digit number followed by the extension if necessary.") 
+    } else {
+        return true
+    }
+}
+
 let team =[]
 const addManager = () => {
     return inquirer
@@ -36,19 +59,18 @@ const addManager = () => {
                 type: 'input',
                 name: 'managerEmail',
                 message: "What is the team Manager's email?",
-                validate: validation
+                validate: emailValidation
             },
             {
                 type: 'input',
                 name: 'managerNum',
-                message: "What is the team Manager's office number? If they have an extension, please enter as ext. XXX after the phone num. ",
-                validate: validation
+                message: "What is the team Manager's office number? If they have an extension, please enter ext. [XYZ] after the phone number. ",
+                validate: numberValidation
             }
         ])
         .then(employeeData => {
             const { managerName, managerID, managerEmail, managerNum } = employeeData
             const manager = new Manager(managerName, managerID, managerEmail, managerNum)
-            console.log(manager.employeeRole())
             team.push(manager)
         }
         )
@@ -78,7 +100,7 @@ const addEmployee = async () => {
             type: 'input',
             name: 'employeeEmail',
             message: "What is the Employee's email?",
-            validate: validation
+            validate: emailValidation
         },
         {
             type: 'input',
@@ -127,7 +149,17 @@ const htmlData = async () => {
 
 addManager()
     .then(htmlData)
-    .then(data => { //creates a new file in dist folder called index.js
+    .then(data => { //creates a new file in dist folder called index.html
         data = dataHTML
+        console.log("Please see your new index.html file in the /dist/index.html folder")
+        let dir = path.join(__dirname, 'dist')
+        fs.mkdir(dir, (error) => {
+            if(error){
+              console.log('Folder found in directory. New folder not created.')
+            } else {
+              console.log('New folder has been created.')
+            }
+          })
         return fs.writeFileSync(path.join(process.cwd(), "/dist/index.html"), generateHTML(data));
-    })
+        }
+    )
